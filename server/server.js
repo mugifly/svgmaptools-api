@@ -8,23 +8,26 @@ const { execFile } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const tmp = require("tmp");
+const os = require("os");
 
 // 定数
 const JAR_PATH = `/app/svgMapTools.jar`;
 const SYMBOL_TEMPLATE_PATH = `/app/symbolTemplate.txt`;
+const MAX_UPLOAD_SIZE_MB = 1; // アップロードサイズの上限設定 (1MB)
 
 // Multer の設定
-const tempUploadDir = tmp.dirSync();
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, tempUploadDir.name);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, os.tmpdir());
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + ".csv");
+    },
+  }),
+  limits: { fileSize: MAX_UPLOAD_SIZE_MB * 1024 * 1024 },
 });
-const upload = multer({ storage: storage });
 
 // サーバの初期化
 const app = express();
@@ -105,6 +108,15 @@ app.post("/shape2svgmap", upload.single("csv"), (req, res) => {
       outputSvgDir.removeCallback();
     });
   });
+});
+
+// ファイルサイズ制限エラーハンドラ
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    res.status(413).send("Error: File size exceeds the maximum limit");
+  } else {
+    next(err);
+  }
 });
 
 // サーバを起動
