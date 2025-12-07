@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  svgmaptools:
+    build:
+      context: .
+      args:
+        SVG_MAP_TOOLS_REPO_REF: "1d8500f7022e61769df3722838af6cd429b74d94"
+    container_name: svgmaptools
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
