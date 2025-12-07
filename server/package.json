@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
     "express": "^5.2.1",
     "multer": "^2.0.2",
     "tmp": "^0.2.5"
