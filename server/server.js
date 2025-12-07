@@ -2,6 +2,7 @@
  * SVGMapTools API
  */
 const express = require("express");
+const cors = require("cors");
 const multer = require("multer");
 const { execFile } = require("child_process");
 const path = require("path");
@@ -27,6 +28,9 @@ const upload = multer({ storage: storage });
 
 // サーバの初期化
 const app = express();
+
+// CORS の設定
+app.use(cors());
 
 // POST - /shape2svgmap
 app.post("/shape2svgmap", upload.single("csv"), (req, res) => {
