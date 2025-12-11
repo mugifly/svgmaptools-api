@@ -13,5 +13,12 @@ docker compose up --build
 #### Usage
 
 ```sh
-curl -X POST -F "csv=@sample.csv" http://localhost:3000/shape2svgmap -o output.svg
+curl -X POST -F "csv=@sample.csv" http://localhost:3000/shape2svgmap?linktitle=2 -o output.svg
 ```
+
+**Query Parameters:**
+
+- linktitle
+- densityControl
+- level
+- limit

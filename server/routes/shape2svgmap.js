@@ -36,6 +36,24 @@ module.exports = async (req, res) => {
     return res.status(400).send("Error: " + e.message);
   }
 
+  // パラメータの取得
+  const params = {
+    linktitle: "3",
+    level: "3",
+    limit: "50",
+    densityControl: "400",
+  };
+  for (const key of Object.keys(params)) {
+    if (req.query[key]) {
+      const str = req.query[key].toString().trim();
+      const n = parseInt(str, 10);
+      if (isNaN(n)) {
+        continue;
+      }
+      params[key] = n.toString();
+    }
+  }
+
   // SVG ファイルの生成先として一時ディレクトリを設定
   const outputSvgDir = tmp.dirSync({
     unsafeCleanup: true,
@@ -45,25 +63,38 @@ module.exports = async (req, res) => {
   // SVGMapTools コマンド実行用の引数を設定
   const args = [
     "-Xmx2g",
+
     "-jar",
     JAR_PATH,
+
     "Shape2SVGMap",
+
     "-poisymbol",
     SYMBOL_TEMPLATE_PATH,
+
     "-micrometa2",
+
     "-level",
-    "3",
+    params["level"],
+
     "-limit",
-    "50",
+    params["limit"],
+
     "-showtile",
+
     "-densityControl",
-    "400",
+    params["densityControl"],
+
     "-lowresimage",
+
     "-charset",
     "utf-8",
+
     "-linktitle",
-    "3",
+    params["linktitle"],
+
     inputCsvPath,
+
     outputSvgPath,
   ];
 
